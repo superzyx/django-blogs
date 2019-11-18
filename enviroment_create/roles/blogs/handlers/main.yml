@@ -1,0 +1,3 @@
+---
+- name: restart openresty
+  shell: /usr/local/openresty/bin/openresty -s reload

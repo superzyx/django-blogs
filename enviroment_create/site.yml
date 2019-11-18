@@ -1,0 +1,22 @@
+---
+- name: deploy openresty
+  hosts: webservers
+  gather_facts: False
+  remote_user: root
+  roles: 
+    - blogs
+
+- name: deploy python
+  hosts: webservers
+  gather_facts: False
+  remote_user: root
+  roles:
+    - python
+
+- name: deploy mysql
+  hosts: webservers
+  gather_facts: False
+  remote_user: root
+  roles:
+    - mysql
+

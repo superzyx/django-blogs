@@ -1,0 +1,34 @@
+---
+- name: transfer mysql package
+  copy:
+    src: mysql.tar.gz
+    dest: /mnt/
+
+- name: create workspace
+  shell: cd /mnt;tar xf /mnt/mysql.tar.gz -C /usr/local/;useradd mysql;chown -R mysql:mysql /usr/local/mysqld;
+
+- name: install requirment of mysql
+  yum: 
+    name: ["@Development Tools",ncurses,ncurses-devel,bison,libgcrypt,perl,make,cmake]
+    state: latest
+
+- name: environment vair
+  shell: echo "export PATH=$PATH:/usr/local/mysqld/mysql/bin" >>/etc/profile; source /etc/profile; cp /etc/{my.cnf,my.cnf.bak};
+
+- name: transfer settings of mysql
+  template: src=my.cnf dest=/etc/
+
+- name: start mysql first in safe
+  shell: mysqld --defaults-file=/etc/my.cnf --initialize --user='mysql';mysqld_safe --defaults-file=/etc/my.cnf &
+
+- name: socket and enter mysql command
+  shell: ln -s /usr/local/mysqld/tmp/mysql.sock /tmp/mysql.sock; cd /usr/local/mysqld/mysql/support-files; cp mysql.server /etc/init.d/mysqld; chkconfig --add mysqld; chkconfig mysqld on;
+
+- name: filter password of mysql
+  shell: echo "password-- $(grep 'temporary password' /usr/local/mysqld/log/mysql_error.log | awk '{print $NF}')">> /usr/local/mysqld/password.txt; echo "username-- root">> /usr/local/mysqld/password.txt;
+
+- name: the command to control mysql
+  shell: ln -s /usr/local/mysqld/mysql/support-files/mysql.server /usr/bin/mysqlctl
+ 
+- name: start mysql
+  shell: pkill mysql;mysqlctl start;

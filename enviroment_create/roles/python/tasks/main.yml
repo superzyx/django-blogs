@@ -1,0 +1,35 @@
+---
+- name: install replayment
+  yum: name= {{ python_replayment }} state=latest
+
+- name: get python package to install
+  shell: wget {{ python_url }}
+
+- name: decompress package
+  shell: tar -zxf {{ python_version }}.tgz
+
+- name: install and make python
+  shell: cd {{ python_version }};./configure --prefix=/usr/local/python3;make;make install;
+
+- name: make the python movement link
+  shell: ln -s /usr/local/python3/bin/python3.7 /usr/bin/python3;ln -s /usr/local/python3/bin/pip3.7 /usr/bin/pip3;
+
+- name: make virtual environment command
+  shell: pip3 install virtualenv;ln -s /usr/local/python3/bin/virtualenv /usr/bin/virtualenv;
+
+- name: create virtual environment
+  shell: mkdir -p /data/env;mkdir -p /data/wwroot;cd /data/env;virtualenv --python=/usr/bin/python3 {{ project_name }};
+
+- name: enter virtual environment
+  shell: source /data/env/{{ project_name }}/bin/activate;
+
+- name: install uwsgi
+  shell: pip3 install uwsgi;ln -s /usr/local/python3/bin/uwsgi /usr/bin/uwsgi
+
+- name: transfer requires to the slave
+  template:
+    src: requirment.txt
+    dest: /data/requirment.txt
+
+- name: install requirement
+  shell: cd /data/;pip3 install -r requiremnt.txt

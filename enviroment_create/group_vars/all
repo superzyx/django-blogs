@@ -1,0 +1,8 @@
+---
+openresty_name: openresty-1.15.8.2
+items: [pcre-devel, openssl-devel, gcc, curl]
+
+python_replayment: [Development tools, openssl-devel, bzip2-devel, expat-devel, gdbm-devel, readline-devel, sqlite-devel, psmisc, libffi-devel, wget]
+python_url: https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
+python_version: Python-3.7.0 
+project_name: blog

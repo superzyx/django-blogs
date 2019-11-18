@@ -1,0 +1,27 @@
+---
+- name: wget the openresty source
+  shell: wget https://openresty.org/download/{{ openresty_name }}.tar.gz
+
+- name: decompression the tar
+  shell: tar -xzf {{ openresty_name }}.tar.gz -C /mnt/
+
+- name: install packages
+  yum: name={{ items }} state=latest
+
+
+- name: add user of using it
+  shell: useradd nginx
+
+- name: install openresty
+  shell: cd /mnt/{{ openresty_name }};/mnt/{{ openresty_name }}/configure --prefix=/usr/local/openresty/ --user=nginx --group=nginx;
+
+- name : make
+  shell: cd /mnt/{{ openresty_name }};make;make install;
+
+- name: scp nginx.conf
+  template: src=nginx.conf dest=/usr/local/openresty/nginx/conf/nginx.conf.bak
+  notify:
+    - restart openresty
+
+- name: start openresty
+  shell: /usr/local/openresty/bin/openresty
